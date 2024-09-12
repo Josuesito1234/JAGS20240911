@@ -16,28 +16,64 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+//Crear una lista para almacenar objetos de tipo Producto 
+var productos = new List<Producto>();
 
-app.MapGet("/weatherforecast", () =>
+//Configurar una ruta GET para obtener todos los productos
+app.MapGet("/productos", () =>
 {
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateTime.Now.AddDays(index),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
+return productos; // devuelve la lista de productos
+});
 
+//Configurar una ruta GET para obtener un producto especifico por su ID
+app.MapGet("/productos/{id}", (int id) =>
+{
+//Busca un producto en la lista que tenga el ID especificado
+var producto = productos.FirstOrDefault(c => c.Id == id);
+return producto; //Devuelve el producto encontrado ( o null si no se encuentra)
+});
+
+//Configurar una ruta PUT para actualizar un producto existente por su ID
+app.MapGet("/productos/{id}", (int id, Producto producto) =>
+{
+//Busca un producto en la lista que tenga el ID especificado
+var existingProducto = productos.FirstOrDefault(c => c.Id == id);
+if (existingProducto != null)
+{
+//actualiza los datos del producto existente en los datos proporcionados
+existingProducto.Name = producto.Name;
+existingProducto.Precio = producto.Precio;
+return Results.Ok(); //Devuelve una respuesta HTTP 200 ok
+}
+else
+{
+return Results.NotFound(); // Devuelve una respuesta HTTP 404 Not Found si el producto no existe 
+}
+});
+
+//Configurar una ruta DELETE para eliminar un producto por su ID
+app.MapDelete("/productos/{id}", (int id) =>
+{
+// Busca un producto en la lista que tenga un ID especificado
+var existingProducto = productos.FirstOrDefault(c => c.Id == id);
+if (existingProducto != null)
+{
+productos.Remove(existingProducto);
+return Results.Ok(); // Devueve la respuesta HTTP 200 OK
+}
+else
+{
+return Results.NotFound(); // Devuelve una respuesta HTTP 404 Not Found si el producto no existe 
+}
+});
+
+//Ejecutar la aplicacion
 app.Run();
 
-internal record WeatherForecast(DateTime Date, int TemperatureC, string? Summary)
+internal class Producto
 {
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public double Precio { get; set; }
 }
+
