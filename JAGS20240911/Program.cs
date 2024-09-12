@@ -34,21 +34,20 @@ return producto; //Devuelve el producto encontrado ( o null si no se encuentra)
 });
 
 //Configurar una ruta PUT para actualizar un producto existente por su ID
-app.MapGet("/productos/{id}", (int id, Producto producto) =>
+app.MapPut("/productos/{id}", (int id, Producto producto) => 
 {
-//Busca un producto en la lista que tenga el ID especificado
-var existingProducto = productos.FirstOrDefault(c => c.Id == id);
-if (existingProducto != null)
-{
-//actualiza los datos del producto existente en los datos proporcionados
-existingProducto.Name = producto.Name;
-existingProducto.Precio = producto.Precio;
-return Results.Ok(); //Devuelve una respuesta HTTP 200 ok
-}
-else
-{
-return Results.NotFound(); // Devuelve una respuesta HTTP 404 Not Found si el producto no existe 
-}
+    var existingProducto = productos.FirstOrDefault(c =>c.Id ==id);
+    if (existingProducto != null) 
+    {
+        //Actualiza los datos del cliente existente con los datos proporcionados
+        existingProducto.Name = producto.Name;
+        existingProducto.Precio = producto.Precio;
+        return Results.Ok();
+    }
+    else
+    {
+        return Results.NotFound();
+    }
 });
 
 //Configurar una ruta DELETE para eliminar un producto por su ID
